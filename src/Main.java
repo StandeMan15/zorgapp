@@ -6,37 +6,41 @@ import java.time.Period;
 public class Main {
     public static void main(String[] args) {
         Patient[] patients = {
-                new Patient("John Doe", "1999-01-01", "1234AB", 81, 178),
-                new Patient("Tim Timmer", "1976-12-31", "1111AB", 95, 192)
+                new Patient("John Doe", "1999-01-01", "1234AB", 81, 178, "Enkel verzwikt op een stoeprand"),
+                new Patient("Tim Timmer", "1976-12-31", "1111AB", 95, 192, "Geen recente blessures")
         };
 
         Scanner scanRole = new Scanner(System.in);
         System.out.println("Wat is uw rol?");
         String role = scanRole.nextLine();
 
-        if (role.equals("huisarts")) {
-            Scanner scanPatient = new Scanner(System.in);
-            System.out.println("Wat is de naam van uw patient");
-            String searchName = scanPatient.nextLine();
+        Scanner scanPatient = new Scanner(System.in);
+        System.out.println("Wat is de naam van uw patient");
+        String searchName = scanPatient.nextLine();
 
-            Patient foundPatient = findPatientByName(patients, searchName);
+        Patient foundPatient = findPatientByName(patients, searchName);
 
-            if (foundPatient != null) {
-                System.out.println("Patient found in the array:");
-                System.out.println("Full Name: " + foundPatient.getFullName());
-                System.out.println("Postal Code: " + foundPatient.getPostalCode());
-                System.out.println("Weight: " + foundPatient.getWeight());
+        if (foundPatient != null) {
+
+            System.out.println("Naam: " + foundPatient.getFullName());
+            System.out.println("Postcode: " + foundPatient.getPostalCode());
+            System.out.println("Birth Date: " + foundPatient.getBirthDate());
+            System.out.println("Leeftijd: " + foundPatient.getAge() + " jaar");
+
+            if(role.equals("huisarts")) {
+                System.out.println("Gewicht: " + foundPatient.getWeight());
                 System.out.println("Lengte: " + foundPatient.getLength() + "cm");
                 System.out.println("BMI: " + foundPatient.getBMI());
-                System.out.println("Birth Date: " + foundPatient.getBirthDate());
-                System.out.println("Leeftijd: " + foundPatient.getAge() + " jaar");
-            } else {
-                System.out.println("Patient not found in the array.");
             }
 
-            scanPatient.close();
+            if(role.equals("fysio")) {
+                System.out.println(foundPatient.getInjuries());
+            }
+        } else {
+            System.out.println("Deze naam is niet bij ons bekent");
         }
 
+        scanPatient.close();
         scanRole.close();
     }
 
@@ -52,21 +56,26 @@ public class Main {
 }
 
 class Patient {
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private LocalDate birthDate;
     private String postalCode;
     private int weight;
     private int length;
+    private String injuries;
 
-    public Patient(String fullName, String birthDateStr, String postalCode, int weight, int length) {
-        this.fullName = fullName;
+    public Patient(String firstName,String lastName, String birthDateStr, String postalCode, int weight, int length, String injuries) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.birthDate = LocalDate.parse(birthDateStr);
         this.postalCode = postalCode;
         this.weight = weight;
         this.length = length;
+        this.injuries = injuries;
     }
 
     public String getFullName() {
+        String fullName = firstName + " " + lastName;
         return fullName;
     }
 
@@ -87,14 +96,18 @@ class Patient {
     }
 
     public double getBMI() {
-        double heightInMeters = (double) length / 100.0; 
+        double heightInMeters = (double) length / 100.0;
         double bmi = weight / (heightInMeters * heightInMeters);
-        return Math.round(bmi * 100.0) / 100.0;
+        return Math.round(bmi * 10.0) / 10.0;
     }
 
         public int getAge() {
         LocalDate currentDate = LocalDate.now();
         Period age = Period.between(birthDate, currentDate);
         return age.getYears();
+    }
+
+    public String getInjuries() {
+        return injuries;
     }
 }
