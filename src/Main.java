@@ -1,12 +1,19 @@
 import java.util.Scanner;
 import java.time.LocalDate;
+import java.time.Period;
+import com.google.gson.Gson;  
+import com.google.gson.reflect.TypeToken;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
+
 
 public class Main {
     public static void main(String[] args) {
-        Patient[] patients = {
-                new Patient("John Doe", "1999-01-01", "1234AB", 81),
-                new Patient("Tim Timmer", "1976-12-31", "1111AB", 95)
-        };
+
+        List<Patient> patients = readPatientsFromJson("patients.json");
 
         Scanner scanRole = new Scanner(System.in);
         System.out.println("Wat is uw rol?");
@@ -19,30 +26,46 @@ public class Main {
 
             Patient foundPatient = findPatientByName(patients, searchName);
 
-            if (foundPatient != null) {
-                System.out.println("Patient found in the array:");
-                System.out.println("Full Name: " + foundPatient.getFullName());
-                System.out.println("Birth Date: " + foundPatient.getBirthDate());
-                System.out.println("Postal Code: " + foundPatient.getPostalCode());
-                System.out.println("Weight: " + foundPatient.getWeight());
-            } else {
-                System.out.println("Patient not found in the array.");
+        if (foundPatient != null) {
+
+            System.out.println("Naam: " + foundPatient.getFullName());
+            System.out.println("Postcode: " + foundPatient.getPostalCode());
+            System.out.println("Birth Date: " + foundPatient.getBirthDate());
+            System.out.println("Leeftijd: " + foundPatient.getAge() + " jaar");
+
+            if (role.equals("huisarts")) {
+                System.out.println("Gewicht: " + foundPatient.getWeight());
+                System.out.println("Lengte: " + foundPatient.getLength() + "cm");
+                System.out.println("BMI: " + foundPatient.getBMI());
             }
 
-            scanPatient.close();
+            if (role.equals("fysio")) {
+                System.out.println(foundPatient.getInjuries());
+            }
+        } else {
+            System.out.println("Deze naam is niet bij ons bekend");
         }
 
         scanRole.close();
     }
 
-    // Method to find a patient by name
-    public static Patient findPatientByName(Patient[] patients, String searchName) {
+    public static Patient findPatientByName(List<Patient> patients, String searchName) {
         for (Patient patient : patients) {
             if (patient.getFullName().equalsIgnoreCase(searchName)) {
                 return patient;
             }
         }
-        return null; // Patient not found
+        return null;
+    }
+
+    public static List<Patient> readPatientsFromJson(String filePath) {
+        try (FileReader reader = new FileReader(filePath)) {
+            Type listType = new TypeToken<List<Patient>>(){}.getType();
+            return new Gson().fromJson(reader, listType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 
@@ -52,14 +75,16 @@ class Patient {
     private String postalCode;
     private int weight;
 
-    public Patient(String fullName, String birthDateStr, String postalCode, int weight) {
-        this.fullName = fullName;
+    public Patient(String firstName, String lastName, String birthDateStr, String postalCode, int weight, int length, String injuries) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.birthDate = LocalDate.parse(birthDateStr);
         this.postalCode = postalCode;
         this.weight = weight;
     }
 
     public String getFullName() {
+        String fullName = firstName + " " + lastName;
         return fullName;
     }
 
@@ -73,5 +98,25 @@ class Patient {
 
     public int getWeight() {
         return weight;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public double getBMI() {
+        double heightInMeters = (double) length / 100.0;
+        double bmi = weight / (heightInMeters * heightInMeters);
+        return Math.round(bmi * 10.0) / 10.0;
+    }
+
+        public int getAge() {
+        LocalDate currentDate = LocalDate.now();
+        Period age = Period.between(birthDate, currentDate);
+        return age.getYears();
+    }
+
+    public String getInjuries() {
+        return injuries;
     }
 }
