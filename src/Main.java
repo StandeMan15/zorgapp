@@ -1,50 +1,61 @@
-import java.util.Scanner;
-import java.time.LocalDate;
-import java.time.Period;
-import com.google.gson.Gson;  
-import com.google.gson.reflect.TypeToken;
-
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
-
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-
-        List<Patient> patients = readPatientsFromJson("patients.json");
 
         Scanner scanRole = new Scanner(System.in);
         System.out.println("Wat is uw rol?");
         String role = scanRole.nextLine();
 
-        if (role.equals("huisarts")) {
-            Scanner scanPatient = new Scanner(System.in);
-            System.out.println("Wat is de naam van uw patient");
-            String searchName = scanPatient.nextLine();
+        String filePath = "json/patients.json";
+        try {
+            FileReader fileReader = new FileReader(filePath);
 
-            Patient foundPatient = findPatientByName(patients, searchName);
-
-        if (foundPatient != null) {
-
-            System.out.println("Naam: " + foundPatient.getFullName());
-            System.out.println("Postcode: " + foundPatient.getPostalCode());
-            System.out.println("Birth Date: " + foundPatient.getBirthDate());
-            System.out.println("Leeftijd: " + foundPatient.getAge() + " jaar");
-
-            if (role.equals("huisarts")) {
-                System.out.println("Gewicht: " + foundPatient.getWeight());
-                System.out.println("Lengte: " + foundPatient.getLength() + "cm");
-                System.out.println("BMI: " + foundPatient.getBMI());
+            int character;
+            while ((character = fileReader.read()) != -1) {
+                // Convert the character to a char and print it.
+                char ch = (char) character;
+                System.out.print(ch);
             }
 
-            if (role.equals("fysio")) {
-                System.out.println(foundPatient.getInjuries());
-            }
-        } else {
-            System.out.println("Deze naam is niet bij ons bekend");
+            // Close the FileReader when done to free up system resources.
+            fileReader.close();
+
+        } catch (IOException e) {
+            System.err.println("File not found or cannot be read.");
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+//        Scanner scanPatient = new Scanner(System.in);
+//        System.out.println("Wat is de naam van uw patient");
+//        String searchName = scanPatient.nextLine();
+
+        // if (PatientData != null) {
+
+        //     System.out.println("Naam: " + PatientData.getFullName());
+        //     System.out.println("Postcode: " + PatientData.getPostalCode());
+        //     System.out.println("Birth Date: " + PatientData.getBirthDate());
+        //     System.out.println("Leeftijd: " + PatientData.getAge() + " jaar");
+
+        //     if (role.equals("huisarts")) {
+        //         System.out.println("Gewicht: " + PatientData.getWeight());
+        //         System.out.println("Lengte: " + PatientData.getLength() + "cm");
+        //         System.out.println("BMI: " + PatientData.getBMI());
+        //     }
+
+        //     if (role.equals("fysio")) {
+        //         System.out.println(PatientData.getInjuries());
+        //     }
+        // } else {
+        //     System.out.println("Deze naam is niet bij ons bekend");
+        // }
 
         scanRole.close();
     }
@@ -57,23 +68,16 @@ public class Main {
         }
         return null;
     }
-
-    public static List<Patient> readPatientsFromJson(String filePath) {
-        try (FileReader reader = new FileReader(filePath)) {
-            Type listType = new TypeToken<List<Patient>>(){}.getType();
-            return new Gson().fromJson(reader, listType);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }
 
 class Patient {
-    private String fullName;
+    private String firstName;
+    private String lastName;
     private LocalDate birthDate;
     private String postalCode;
     private int weight;
+    private int length;
+    private String injuries;
 
     public Patient(String firstName, String lastName, String birthDateStr, String postalCode, int weight, int length, String injuries) {
         this.firstName = firstName;

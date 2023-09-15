@@ -1,7 +1,9 @@
 [
   {
-    "firstName": "John",
-    "lastName": "Doe",
+    "name": {
+        "firstName": "John",
+        "lastName": "Doe"
+    },
     "birthDateStr": "1999-01-01",
     "postalCode": "1234AB",
     "weight": 81,
