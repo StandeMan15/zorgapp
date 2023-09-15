@@ -1,13 +1,12 @@
-import java.util.Scanner;
-import java.time.LocalDate;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Patient[] patients = {
-                new Patient("John Doe", "1999-01-01", "1234AB", 81, 178, "Enkel verzwikt op een stoeprand"),
-                new Patient("Tim Timmer", "1976-12-31", "1111AB", 95, 192, "Geen recente blessures")
+                new Patient("John", "Doe", "1999-01-01", "1234AB", 81, 178, "encorafenib"),
+                new Patient("Tim", "Timmer", "1976-12-31", "1111AB", 95, 192, "nadroparine")
         };
 
         Scanner scanRole = new Scanner(System.in);
@@ -34,7 +33,7 @@ public class Main {
             }
 
             if(role.equals("fysio")) {
-                System.out.println(foundPatient.getInjuries());
+                System.out.println("medicatie" + foundPatient.getmedication());
             }
         } else {
             System.out.println("Deze naam is niet bij ons bekent");
@@ -62,16 +61,16 @@ class Patient {
     private String postalCode;
     private int weight;
     private int length;
-    private String injuries;
+    private String medication;
 
-    public Patient(String firstName,String lastName, String birthDateStr, String postalCode, int weight, int length, String injuries) {
+    public Patient(String firstName,String lastName, String birthDateStr, String postalCode, int weight, int length, String medication) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = LocalDate.parse(birthDateStr);
         this.postalCode = postalCode;
         this.weight = weight;
         this.length = length;
-        this.injuries = injuries;
+        this.medication = medication;
     }
 
     public String getFullName() {
@@ -107,7 +106,7 @@ class Patient {
         return age.getYears();
     }
 
-    public String getInjuries() {
-        return injuries;
+    public String getmedication() {
+        return medication;
     }
 }
