@@ -7,12 +7,12 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-
+        
         Scanner scanRole = new Scanner(System.in);
         System.out.println("Wat is uw rol?");
         String role = scanRole.nextLine();
 
-        String filePath = "json/patients.json";
+        String filePath = "src/json/patients.json";
         try {
             FileReader fileReader = new FileReader(filePath);
 
@@ -29,33 +29,11 @@ public class Main {
         } catch (IOException e) {
             System.err.println("File not found or cannot be read.");
             e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }      
 
-//        Scanner scanPatient = new Scanner(System.in);
-//        System.out.println("Wat is de naam van uw patient");
-//        String searchName = scanPatient.nextLine();
-
-        // if (PatientData != null) {
-
-        //     System.out.println("Naam: " + PatientData.getFullName());
-        //     System.out.println("Postcode: " + PatientData.getPostalCode());
-        //     System.out.println("Birth Date: " + PatientData.getBirthDate());
-        //     System.out.println("Leeftijd: " + PatientData.getAge() + " jaar");
-
-        //     if (role.equals("huisarts")) {
-        //         System.out.println("Gewicht: " + PatientData.getWeight());
-        //         System.out.println("Lengte: " + PatientData.getLength() + "cm");
-        //         System.out.println("BMI: " + PatientData.getBMI());
-        //     }
-
-        //     if (role.equals("fysio")) {
-        //         System.out.println(PatientData.getInjuries());
-        //     }
-        // } else {
-        //     System.out.println("Deze naam is niet bij ons bekend");
-        // }
+       Scanner scanPatient = new Scanner(System.in);
+       System.out.println("Wat is de naam van uw patient");
+       String searchName = scanPatient.nextLine();
 
         scanRole.close();
     }
@@ -114,7 +92,7 @@ class Patient {
         return Math.round(bmi * 10.0) / 10.0;
     }
 
-        public int getAge() {
+    public int getAge() {
         LocalDate currentDate = LocalDate.now();
         Period age = Period.between(birthDate, currentDate);
         return age.getYears();

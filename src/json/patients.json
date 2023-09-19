@@ -6,13 +6,15 @@
     },
     "birthDateStr": "1999-01-01",
     "postalCode": "1234AB",
-    "weight": 81,
-    "length": 178,
+    "weight": 120,
+    "length": 171,
     "injuries": "Enkel verzwikt op een stoeprand"
   },
   {
-    "firstName": "Tim",
-    "lastName": "Timmer",
+    "name": {
+      "firstName": "Tim",
+      "lastName": "Timmer"
+    },
     "birthDateStr": "1976-12-31",
     "postalCode": "1111AB",
     "weight": 95,
