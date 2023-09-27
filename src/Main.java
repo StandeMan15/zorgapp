@@ -1,56 +1,51 @@
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Patient[] patients = {
-                new Patient("John", "Doe", "1999-01-01", "1234AB", 81, 178, "encorafenib"),
-                new Patient("Tim", "Timmer", "1976-12-31", "1111AB", 95, 192, "nadroparine")
-        };
-
+        
         Scanner scanRole = new Scanner(System.in);
         System.out.println("Wat is uw rol?");
         String role = scanRole.nextLine();
 
-        Scanner scanPatient = new Scanner(System.in);
-        System.out.println("Wat is de naam van uw patient");
-        String searchName = scanPatient.nextLine();
+        String filePath = "src/json/patients.json";
+        try {
+            FileReader fileReader = new FileReader(filePath);
 
-        Patient foundPatient = findPatientByName(patients, searchName);
-
-        if (foundPatient != null) {
-
-            System.out.println("Naam: " + foundPatient.getFullName());
-            System.out.println("Postcode: " + foundPatient.getPostalCode());
-            System.out.println("Birth Date: " + foundPatient.getBirthDate());
-            System.out.println("Leeftijd: " + foundPatient.getAge() + " jaar");
-
-            if(role.equals("huisarts")) {
-                System.out.println("Gewicht: " + foundPatient.getWeight());
-                System.out.println("Lengte: " + foundPatient.getLength() + "cm");
-                System.out.println("BMI: " + foundPatient.getBMI());
+            int character;
+            while ((character = fileReader.read()) != -1) {
+                // Convert the character to a char and print it.
+                char ch = (char) character;
+                System.out.print(ch);
             }
 
-            if(role.equals("fysio")) {
-                System.out.println("medicatie" + foundPatient.getmedication());
-            }
-        } else {
-            System.out.println("Deze naam is niet bij ons bekent");
-        }
+            // Close the FileReader when done to free up system resources.
+            fileReader.close();
+
+        } catch (IOException e) {
+            System.err.println("File not found or cannot be read.");
+            e.printStackTrace();
+        }      
+
+       Scanner scanPatient = new Scanner(System.in);
+       System.out.println("Wat is de naam van uw patient");
+       String searchName = scanPatient.nextLine();
 
         scanPatient.close();
         scanRole.close();
     }
 
-    // Method to find a patient by name
-    public static Patient findPatientByName(Patient[] patients, String searchName) {
+    public static Patient findPatientByName(List<Patient> patients, String searchName) {
         for (Patient patient : patients) {
             if (patient.getFullName().equalsIgnoreCase(searchName)) {
                 return patient;
             }
         }
-        return null; // Patient not found
+        return null;
     }
 }
 
@@ -61,9 +56,9 @@ class Patient {
     private String postalCode;
     private int weight;
     private int length;
-    private String medication;
+    private String injuries;
 
-    public Patient(String firstName,String lastName, String birthDateStr, String postalCode, int weight, int length, String medication) {
+    public Patient(String firstName, String lastName, String birthDateStr, String postalCode, int weight, int length, String injuries) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = LocalDate.parse(birthDateStr);
@@ -100,13 +95,13 @@ class Patient {
         return Math.round(bmi * 10.0) / 10.0;
     }
 
-        public int getAge() {
+    public int getAge() {
         LocalDate currentDate = LocalDate.now();
         Period age = Period.between(birthDate, currentDate);
         return age.getYears();
     }
 
-    public String getmedication() {
-        return medication;
+    public String getInjuries() {
+        return injuries;
     }
 }
