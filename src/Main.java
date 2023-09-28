@@ -1,3 +1,6 @@
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -7,29 +10,26 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        
+
         Scanner scanRole = new Scanner(System.in);
         System.out.println("Wat is uw rol?");
         String role = scanRole.nextLine();
 
-        String filePath = "src/json/patients.json";
+        String filePath  = "src/json/patients.json";
+
         try {
             FileReader fileReader = new FileReader(filePath);
 
-            int character;
-            while ((character = fileReader.read()) != -1) {
-                // Convert the character to a char and print it.
-                char ch = (char) character;
-                System.out.print(ch);
-            }
+            Object obj=JSONValue.parse(fileReader);
+            JSONObject jsonObject = (JSONObject) obj;
 
-            // Close the FileReader when done to free up system resources.
-            fileReader.close();
+            String birthday = (String) jsonObject.get("birthDateStr");
+            System.out.println(birthday);
 
         } catch (IOException e) {
             System.err.println("File not found or cannot be read.");
             e.printStackTrace();
-        }      
+        }
 
        Scanner scanPatient = new Scanner(System.in);
        System.out.println("Wat is de naam van uw patient");
@@ -56,9 +56,9 @@ class Patient {
     private String postalCode;
     private int weight;
     private int length;
-    private String injuries;
+    private String medication;
 
-    public Patient(String firstName, String lastName, String birthDateStr, String postalCode, int weight, int length, String injuries) {
+    public Patient(String firstName, String lastName, String birthDateStr, String postalCode, int weight, int length, String medication) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = LocalDate.parse(birthDateStr);
@@ -102,6 +102,6 @@ class Patient {
     }
 
     public String getInjuries() {
-        return injuries;
+        return medication;
     }
 }
