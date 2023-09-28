@@ -15,18 +15,20 @@ public class Main {
         System.out.println("Wat is uw rol?");
         String role = scanRole.nextLine();
 
-        String filePath  = "src/json/patients.json";
+        String filePath = "src/json/patients.json";
 
-        try {
-            FileReader fileReader = new FileReader(filePath);
+        try (FileReader fileReader = new FileReader(filePath)) {
+            Object obj = JSONValue.parse(fileReader);
 
-            Object obj=JSONValue.parse(fileReader);
-            JSONObject jsonObject = (JSONObject) obj;
+            if (obj instanceof JSONObject) {
+                JSONObject jsonObject = (JSONObject) obj;
 
-            String birthday = (String) jsonObject.get("birthDateStr");
-            System.out.println(birthday);
+                String birthday = (String) jsonObject.get("birthDateStr");
+                System.out.println("Birthdate: " + birthday);
 
-        } catch (IOException e) {
+            }
+
+            } catch (IOException e) {
             System.err.println("File not found or cannot be read.");
             e.printStackTrace();
         }
