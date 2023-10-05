@@ -3,17 +3,25 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.io.FileReader;
+import java.io.FileWriter;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Scanner;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 public class Main {
     public static void main(String[] args) {
 
-        Scanner scanRole = new Scanner(System.in);
-        System.out.println("Wat is uw rol?");
-        String role = scanRole.nextLine();
+//        Scanner scanRole = new Scanner(System.in);
+//        System.out.println("Wat is uw rol?");
+//        String role = scanRole.nextLine();
 
         String filePath = "src/json/patients.json";
 
@@ -26,35 +34,63 @@ public class Main {
                 if (patientList.size() > 0) {
 
                     Scanner scanPatient = new Scanner(System.in);
-                    System.out.println("What is the name of your patient?");
+                    System.out.println("Wat is de naam van uw patient?");
                     String searchName = scanPatient.nextLine();
 
                     // Search for the patient by name
                     JSONObject foundPatient = findPatientByName(patientList, searchName);
 
                     if (foundPatient != null) {
-                        String firstName = (String) ((JSONObject) foundPatient.get("name")).get("firstName");
-                        String lastName = (String) ((JSONObject) foundPatient.get("name")).get("lastName");
-                        String injuries = (String) foundPatient.get("injuries");
-                        String birthday = (String) foundPatient.get("birthDateStr");
-                        double weight = (double) foundPatient.get("weight");
-                        Long lengthLong = (Long) foundPatient.get("length");
-                        int length = lengthLong.intValue();
-                        LocalDate birthdate = LocalDate.parse(birthday);
+                        displayPatientData(foundPatient);
 
+                        System.out.println("Menu opties:");
+                        System.out.println("1. Bewerk lengte");
+                        System.out.println("2. Bewerk gewicht");
+                        System.out.println("3. Voeg medicijnen toe");
+                        System.out.println("4. Exit");
+                        System.out.print("Voer uw keuze in: ");
+                        int choice = scanPatient.nextInt();
 
-                        System.out.println("Patient: " + firstName + " " + lastName);
-                        System.out.println("Blessures: " + injuries);
-                        System.out.println("Geboortedatum: " + birthdate);
+                        if (choice == 1) {
+                            // Edit Length
+                            System.out.print("Nieuwe lengte (in cm): ");
+                            int newLength = scanPatient.nextInt();
+                            foundPatient.put("length", newLength);
+                            System.out.println("Lengte is aangepast.");
+                        } else if (choice == 2) {
+                            // Edit Weight
+                            System.out.print("Nieuw gewicht (in kg): ");
+                            double newWeight = scanPatient.nextDouble();
+                            foundPatient.put("weight", newWeight);
+                            System.out.println("Gewicht is aangepast.");
+                        } else if (choice == 3) {
+                            // Add Medicijnen
+                            scanPatient.nextLine();
+                            System.out.print("Voeg medicijnen toe (gescheiden door kommas): ");
+                            String inputMedicijnen = scanPatient.nextLine();
 
-                        // Calculate the age based on the birthdate
-                        int age = getAge(birthdate);
-                        System.out.println("Leeftijd: " + age);
+                            List<String> newMedicijnen = Arrays.asList(inputMedicijnen.split(","));
 
-                        double bmi = getBMI(weight, length);
-                        System.out.println("BMI: " + bmi);
+                            JSONArray existingMedicijnenArray = (JSONArray) foundPatient.get("medicijnen");
+
+                            if (existingMedicijnenArray == null) {
+                                existingMedicijnenArray = new JSONArray();
+                            }
+
+                            existingMedicijnenArray.addAll(newMedicijnen);
+
+                            foundPatient.put("medicijnen", existingMedicijnenArray);
+
+                            System.out.println("Medicijnen toegevoegd.");
+                        } else {
+                            System.out.println("Geen gegevens aangepast.");
+                        }
+
+                        savePatientDataToFile(patientList, filePath);
+
+                        displayPatientData(foundPatient);
                     } else {
-                        System.out.println(searchName + " is niet bekent bij ons");
+                        System.out.println(searchName + " is niet bekent in onze lijst");
                     }
 
                     scanPatient.close();
@@ -84,6 +120,58 @@ public class Main {
         }
         return null;
     }
+
+    public static void savePatientDataToFile(JSONArray patientList, String filePath) {
+        try (FileWriter fileWriter = new FileWriter(filePath)) {
+            fileWriter.write(patientList.toJSONString());
+        } catch (IOException e) {
+            System.err.println("Error saving data to the file.");
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public static void displayPatientData(JSONObject patient) {
+        StringBuilder minusString = new StringBuilder();
+
+        for (int i = 0; i < 26; i++) {
+            minusString.append("-");
+        }
+
+        String firstName = (String) ((JSONObject) patient.get("name")).get("firstName");
+        String lastName = (String) ((JSONObject) patient.get("name")).get("lastName");
+        String injuries = (String) patient.get("injuries");
+
+        String birthday = (String) patient.get("birthDateStr");
+        LocalDate birthdate = LocalDate.parse(birthday);
+        DateTimeFormatter europeanDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String formattedBirthday = birthdate.format(europeanDateFormatter);
+
+        double weight = (double) patient.get("weight");
+        Long lengthLong = (Long) patient.get("length");
+        int length = lengthLong.intValue();
+
+        JSONArray medicijnenArray = (JSONArray) patient.get("medicijnen");
+        List<String> medicijnen = new ArrayList<>();
+
+        if (medicijnenArray != null) {
+            for (Object medicijnObj : medicijnenArray) {
+                medicijnen.add((String) medicijnObj);
+            }
+        }
+
+        System.out.println(minusString);
+        System.out.println("Patient: " + firstName + " " + lastName);
+        System.out.println(minusString);
+        System.out.println("Blessures: " + injuries);
+        System.out.println("Geboortedatum: " + formattedBirthday);
+        System.out.println("Lengte: " + length + "cm");
+        System.out.println("Gewicht: " + weight + "kg");
+        System.out.println("Medicijnen: " + String.join(", ", medicijnen));
+    }
+
+
 
     public static int getAge(LocalDate birthDate) {
         LocalDate currentDate = LocalDate.now();
