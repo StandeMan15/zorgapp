@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class Main {
     public static void main(String[] args) {
 
@@ -24,10 +23,11 @@ public class Main {
         try (FileReader fileReader = new FileReader(filePath)) {
             Object file = JSONValue.parse(fileReader);
 
-            if (file instanceof JSONArray) {
-                JSONArray patientList = (JSONArray) file;
+            if (file instanceof JSONArray patientList) {
+                String userRole = User.user(args);
+                System.out.println("U bent een " + userRole);
 
-                if (patientList.size() > 0) {
+                if (!patientList.isEmpty()) {
 
                     Scanner scanPatient = new Scanner(System.in);
                     System.out.println("Wat is de naam van uw patient?");
@@ -129,9 +129,7 @@ public class Main {
     public static void displayPatientData(JSONObject patient) {
         StringBuilder minusString = new StringBuilder();
 
-        for (int i = 0; i <= 25; i++) {
-            minusString.append("-");
-        }
+        minusString.append("-".repeat(26));
 
         String firstName = (String) ((JSONObject) patient.get("name")).get("firstName");
         String lastName = (String) ((JSONObject) patient.get("name")).get("lastName");
