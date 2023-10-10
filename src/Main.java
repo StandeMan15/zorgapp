@@ -19,10 +19,6 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
-//        Scanner scanRole = new Scanner(System.in);
-//        System.out.println("Wat is uw rol?");
-//        String role = scanRole.nextLine();
-
         String filePath = "src/json/patients.json";
 
         try (FileReader fileReader = new FileReader(filePath)) {
@@ -64,24 +60,24 @@ public class Main {
                             foundPatient.put("weight", newWeight);
                             System.out.println("Gewicht is aangepast.");
                         } else if (choice == 3) {
-                            // Add Medicijnen
+                            // Add medicine
                             scanPatient.nextLine();
                             System.out.print("Voeg medicijnen toe (gescheiden door kommas): ");
-                            String inputMedicijnen = scanPatient.nextLine();
+                            String inputmedicine = scanPatient.nextLine();
 
-                            List<String> newMedicijnen = Arrays.asList(inputMedicijnen.split(","));
+                            List<String> newmedicine = Arrays.asList(inputmedicine.split(","));
 
-                            JSONArray existingMedicijnenArray = (JSONArray) foundPatient.get("medicijnen");
+                            JSONArray existingmedicineArray = (JSONArray) foundPatient.get("medicine");
 
-                            if (existingMedicijnenArray == null) {
-                                existingMedicijnenArray = new JSONArray();
+                            if (existingmedicineArray == null) {
+                                existingmedicineArray = new JSONArray();
                             }
 
-                            existingMedicijnenArray.addAll(newMedicijnen);
+                            existingmedicineArray.addAll(newmedicine);
 
-                            foundPatient.put("medicijnen", existingMedicijnenArray);
+                            foundPatient.put("medicine", existingmedicineArray);
 
-                            System.out.println("Medicijnen toegevoegd.");
+                            System.out.println("Medicijn(en) toegevoegd.");
                         } else {
                             System.out.println("Geen gegevens aangepast.");
                         }
@@ -130,12 +126,10 @@ public class Main {
         }
     }
 
-
-
     public static void displayPatientData(JSONObject patient) {
         StringBuilder minusString = new StringBuilder();
 
-        for (int i = 0; i < 26; i++) {
+        for (int i = 0; i <= 25; i++) {
             minusString.append("-");
         }
 
@@ -152,12 +146,12 @@ public class Main {
         Long lengthLong = (Long) patient.get("length");
         int length = lengthLong.intValue();
 
-        JSONArray medicijnenArray = (JSONArray) patient.get("medicijnen");
-        List<String> medicijnen = new ArrayList<>();
+        JSONArray medicineArray = (JSONArray) patient.get("medicine");
+        List<String> medicine = new ArrayList<>();
 
-        if (medicijnenArray != null) {
-            for (Object medicijnObj : medicijnenArray) {
-                medicijnen.add((String) medicijnObj);
+        if (medicineArray != null) {
+            for (Object medicijnObj : medicineArray) {
+                medicine.add((String) medicijnObj);
             }
         }
 
@@ -168,10 +162,10 @@ public class Main {
         System.out.println("Geboortedatum: " + formattedBirthday);
         System.out.println("Lengte: " + length + "cm");
         System.out.println("Gewicht: " + weight + "kg");
-        System.out.println("Medicijnen: " + String.join(", ", medicijnen));
+        System.out.println("BMI " + getBMI(weight, length) + " kg/m² ");
+        System.out.println("Leeftijd: " + getAge(birthdate));
+        System.out.println("Medicijnen: " + String.join(",", medicine));
     }
-
-
 
     public static int getAge(LocalDate birthDate) {
         LocalDate currentDate = LocalDate.now();
