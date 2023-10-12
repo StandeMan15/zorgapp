@@ -4,16 +4,15 @@ import org.json.simple.JSONValue;
 
 import java.io.FileReader;
 import java.io.FileWriter;
-
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Scanner;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
+import static java.lang.System.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -25,12 +24,12 @@ public class Main {
 
             if (file instanceof JSONArray patientList) {
                 String userRole = User.user(args);
-                System.out.println("U bent een " + userRole);
+                out.println("U bent een " + userRole);
 
                 if (!patientList.isEmpty()) {
 
-                    Scanner scanPatient = new Scanner(System.in);
-                    System.out.println("Wat is de naam van uw patient?");
+                    out.println("Wat is de naam van uw patient?");
+                    Scanner scanPatient = new Scanner(in);
                     String searchName = scanPatient.nextLine();
 
                     // Search for the patient by name
@@ -39,30 +38,30 @@ public class Main {
                     if (foundPatient != null) {
                         displayPatientData(foundPatient);
 
-                        System.out.println("Menu opties:");
-                        System.out.println("1. Bewerk lengte");
-                        System.out.println("2. Bewerk gewicht");
-                        System.out.println("3. Voeg medicijnen toe");
-                        System.out.println("4. Exit");
-                        System.out.print("Voer uw keuze in: ");
+                        out.println("Menu opties:");
+                        out.println("1. Bewerk lengte");
+                        out.println("2. Bewerk gewicht");
+                        out.println("3. Voeg medicijnen toe");
+                        out.println("4. Exit");
+                        out.print("Voer uw keuze in: ");
                         int choice = scanPatient.nextInt();
 
                         if (choice == 1) {
                             // Edit Length
-                            System.out.print("Nieuwe lengte (in cm): ");
+                            out.print("Nieuwe lengte (in cm): ");
                             int newLength = scanPatient.nextInt();
                             foundPatient.put("length", newLength);
-                            System.out.println("Lengte is aangepast.");
+                            out.println("Lengte is aangepast.");
                         } else if (choice == 2) {
                             // Edit Weight
-                            System.out.print("Nieuw gewicht (in kg): ");
+                            out.print("Nieuw gewicht (in kg): ");
                             double newWeight = scanPatient.nextDouble();
                             foundPatient.put("weight", newWeight);
-                            System.out.println("Gewicht is aangepast.");
+                            out.println("Gewicht is aangepast.");
                         } else if (choice == 3) {
                             // Add medicine
                             scanPatient.nextLine();
-                            System.out.print("Voeg medicijnen toe (gescheiden door kommas): ");
+                            out.print("Voeg medicijnen toe (gescheiden door kommas): ");
                             String inputmedicine = scanPatient.nextLine();
 
                             List<String> newmedicine = Arrays.asList(inputmedicine.split(","));
@@ -77,27 +76,27 @@ public class Main {
 
                             foundPatient.put("medicine", existingmedicineArray);
 
-                            System.out.println("Medicijn(en) toegevoegd.");
+                            out.println("Medicijn(en) toegevoegd.");
                         } else {
-                            System.out.println("Geen gegevens aangepast.");
+                            out.println("Geen gegevens aangepast.");
                         }
 
                         savePatientDataToFile(patientList, filePath);
 
                         displayPatientData(foundPatient);
                     } else {
-                        System.out.println(searchName + " is niet bekent in onze lijst");
+                        out.println(searchName + " is niet bekent in onze lijst");
                     }
 
                     scanPatient.close();
                 } else {
-                    System.out.println("The JSON array is empty.");
+                    out.println("The JSON array is empty.");
                 }
             } else {
-                System.out.println("The file does not contain a JSON array.");
+                out.println("The file does not contain a JSON array.");
             }
         } catch (IOException e) {
-            System.err.println("File not found or cannot be read.");
+            err.println("File not found or cannot be read.");
             e.printStackTrace();
         }
     }
@@ -121,7 +120,7 @@ public class Main {
         try (FileWriter fileWriter = new FileWriter(filePath)) {
             fileWriter.write(patientList.toJSONString());
         } catch (IOException e) {
-            System.err.println("Error saving data to the file.");
+            err.println("Error saving data to the file.");
             e.printStackTrace();
         }
     }
@@ -153,16 +152,16 @@ public class Main {
             }
         }
 
-        System.out.println(minusString);
-        System.out.println("Patient: " + firstName + " " + lastName);
-        System.out.println(minusString);
-        System.out.println("Blessures: " + injuries);
-        System.out.println("Geboortedatum: " + formattedBirthday);
-        System.out.println("Lengte: " + length + "cm");
-        System.out.println("Gewicht: " + weight + "kg");
-        System.out.println("BMI " + getBMI(weight, length) + " kg/m² ");
-        System.out.println("Leeftijd: " + getAge(birthdate));
-        System.out.println("Medicijnen: " + String.join(",", medicine));
+        out.println(minusString);
+        out.println("Patient: " + firstName + " " + lastName);
+        out.println(minusString);
+        out.println("Blessures: " + injuries);
+        out.println("Geboortedatum: " + formattedBirthday);
+        out.println("Lengte: " + length + "cm");
+        out.println("Gewicht: " + weight + "kg");
+        out.println("BMI " + getBMI(weight, length) + " kg/m² ");
+        out.println("Leeftijd: " + getAge(birthdate));
+        out.println("Medicijnen: " + String.join(",", medicine));
     }
 
     public static int getAge(LocalDate birthDate) {

@@ -26,9 +26,8 @@ public class User {
             }
         } catch (InputMismatchException e) {
             out.println("Dit is geen geldige waarde");
-        } finally {
-            scanUser.close();
         }
+        //scanUser.close();
 
         return userRole;
     }
