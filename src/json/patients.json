@@ -1,1 +1,33 @@
-[{"injuries":"Enkel verzwikt op een stoeprand","postalCode":"1234AB","name":{"firstName":"John","lastName":"Doe"},"length":176,"weight":56.0,"medicine":["paracetemol"," ibuprofen","astmapuffie"],"birthDateStr":"1999-01-01"},{"injuries":"Geen recente blessures","postalCode":"1111AB","name":{"firstName":"Tim","lastName":"Timmer"},"length":192,"weight":95.2,"medicine":["oogdruppels","paracetemol"],"birthDateStr":"1976-12-31"}]
+[
+  {
+    "injuries": "Enkel verzwikt op een stoeprand",
+    "postalCode": "1234AB",
+    "name": {
+      "firstName": "John",
+      "lastName": "Doe"
+    },
+    "length": 176,
+    "weight": 56.0,
+    "medicine": [
+      "paracetemol",
+      " ibuprofen",
+      "astmapuffie"
+    ],
+    "birthDateStr": "1999-01-01"
+  },
+  {
+    "injuries": "Geen recente blessures",
+    "postalCode": "1111AB",
+    "name": {
+      "firstName": "Tim",
+      "lastName": "Timmer"
+    },
+    "length": 192,
+    "weight": 95.2,
+    "medicine": [
+      "oogdruppels",
+      "paracetemol"
+    ],
+    "birthDateStr": "1976-12-31"
+  }
+]
