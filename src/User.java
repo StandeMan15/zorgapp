@@ -1,31 +1,34 @@
 import java.util.Scanner;
 import java.util.InputMismatchException;
+
+import static java.lang.System.*;
+
 public class User {
-    public static void main(String[] args) {
-        System.out.println("Menu opties:");
-        System.out.println("1. Huisarts");
-        System.out.println("2. Apotheker");
-        System.out.println("3. Psygoloog");
+    public static String user(String[] args) {
+        out.println("Menu opties:");
+        out.println("1. Huisarts");
+        out.println("2. Apotheker");
+        out.println("3. Psygoloog");
 
-        Scanner scanUser = new Scanner(System.in);
-        System.out.println("Voer uw keuze in: ");
+        Scanner scanUser = new Scanner(in);
+        out.println("Voer uw keuze in: ");
 
+        String userRole = "";
 
         try {
             int choice = scanUser.nextInt();
-            StringBuilder userRole = new StringBuilder();
 
             switch (choice) {
-                case 1 -> userRole.append("Huisarts");
-                case 2 -> userRole.append("Apotheker");
-                case 3 -> userRole.append("Psygoloog");
-                default -> {
-                    System.out.println("Systeem word gesloten ivm (ongeldige) keuze");
-                    scanUser.close();
-                }
+                case 1 -> userRole = "Huisarts";
+                case 2 -> userRole = "Apotheker";
+                case 3 -> userRole = "Psygoloog";
+                default -> out.println("Systeem wordt gesloten ivm (ongeldige) keuze");
             }
         } catch (InputMismatchException e) {
-            System.out.println("Dit is geen geldige waarde");
+            out.println("Dit is geen geldige waarde");
         }
+        //scanUser.close();
+
+        return userRole;
     }
 }
