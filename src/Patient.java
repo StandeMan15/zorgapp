@@ -1,5 +1,6 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -9,113 +10,117 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
 import static java.lang.System.*;
 
 public class Patient {
     public static void handlePatientList(JSONArray patientList, String filePath, String userRole) {
         if (!patientList.isEmpty()) {
-            if (userRole.equals("Zorgverlener") && RoleRestrictions.hasZorgverlenerAccess()) {
-                // Zorgverlener-specific actions
-            } else if (userRole.equals("Fysiotherapeut") && RoleRestrictions.hasFysiotherapeutAccess()) {
-                // Fysiotherapeut-specific actions
-            } else if (userRole.equals("Apotheker") && RoleRestrictions.hasApothekerAccess()) {
-                // Apotheker-specific actions
-            } else if (userRole.equals("Gebruiker") && RoleRestrictions.hasGebruikerAccess()) {
-                // Gebruiker-specific actions
+
+            out.println("Wat is de naam van uw patiënt?");
+            Scanner scanPatient = new Scanner(System.in);
+            String searchName = scanPatient.nextLine();
+            // Search for the patient by name
+            JSONObject foundPatient = findPatientByName(patientList, searchName);
+
+            if (foundPatient != null) {
+
+                displayPatientData(foundPatient);
+                out.println("Menu opties:");
+                out.println("1. Bewerk lengte");
+                out.println("2. Bewerk gewicht");
+
+                if (userRole.equals("Zorgverlener")) {
+                    //laat zien van bmi grafiek
+                    //constulten bijhouden
+                } else if (userRole.equals("Fysiotherapeut")) {
+                    registerLonginhoud(foundPatient);
+                } else if (userRole.equals("Apotheker")) {
+                    out.println("3. Voeg medicijnen toe");
+                    out.println("4. Bewerk medicijn dosages");
+                } else if (userRole.equals("Gebruiker")) {
+                    // lijst patienten
+                } else {
+                    out.println("Access denied. Invalid user role or insufficient permissions.");
+                }
+
+                out.println("5. Exit");
+                out.print("Voer uw keuze in: ");
+                int choice = scanPatient.nextInt();
+
+                if (choice == 1) {
+                    // Edit Length
+                    out.print("Nieuwe lengte (in cm): ");
+                    int newLength = scanPatient.nextInt();
+                    foundPatient.put("length", newLength);
+                    out.println("Lengte is aangepast.");
+                } else if (choice == 2) {
+                    // Edit Weight
+                    out.print("Nieuw gewicht (in kg): ");
+                    double newWeight = scanPatient.nextDouble();
+                    foundPatient.put("weight", newWeight);
+                    out.println("Gewicht is aangepast.");
+                } else if (choice == 3) {
+                    // Add medicine
+                    scanPatient.nextLine();
+                    out.print("Voeg medicijnen toe (gescheiden door komma's): ");
+                    String inputMedicine = scanPatient.nextLine();
+                    out.print("Voeg medicijn dosages toe (gescheiden door komma's): ");
+                    String inputDosages = scanPatient.nextLine();
+                    List<String> newMedicine = Arrays.asList(inputMedicine.split(","));
+                    List<String> newDosages = Arrays.asList(inputDosages.split(","));
+                    JSONArray existingMedicineArray = (JSONArray) foundPatient.get("medicine");
+                    JSONArray existingDosagesArray = (JSONArray) foundPatient.get("dosages");
+
+                    if (existingMedicineArray == null) {
+                        existingMedicineArray = new JSONArray();
+                    }
+                    if (existingDosagesArray == null) {
+                        existingDosagesArray = new JSONArray();
+                    }
+                    existingMedicineArray.addAll(newMedicine);
+                    existingDosagesArray.addAll(newDosages);
+                    foundPatient.put("medicine", existingMedicineArray);
+                    foundPatient.put("dosages", existingDosagesArray);
+                    out.println("Medicijn(en) en dosages toegevoegd.");
+                } else if (choice == 4) {
+                    // Edit Medicine Dosages
+                    JSONArray existingMedicineArray = (JSONArray) foundPatient.get("medicine");
+                    JSONArray existingDosagesArray = (JSONArray) foundPatient.get("dosages");
+
+                    if (existingMedicineArray != null && existingDosagesArray != null) {
+                        out.println("Huidige medicijnen en dosages:");
+                        for (int i = 0; i < existingMedicineArray.size(); i++) {
+                            String medicine = (String) existingMedicineArray.get(i);
+                            String dosage = (String) existingDosagesArray.get(i);
+                            out.println((i + 1) + ". " + medicine + " - Dosage: " + dosage);
+                        }
+                        out.print("Voer het nummer in van het medicijn dat u wilt bewerken: ");
+                        int medChoice = scanPatient.nextInt();
+                        if (medChoice >= 1 && medChoice <= existingMedicineArray.size()) {
+                            out.print("Voer de nieuwe dosage in: ");
+                            String newDosage = scanPatient.next();
+                            existingDosagesArray.set(medChoice - 1, newDosage);
+                            foundPatient.put("dosages", existingDosagesArray);
+                            out.println("Dosage is aangepast.");
+                        } else {
+                            out.println("Ongeldige keuze.");
+                        }
+                    } else {
+                        out.println("Geen medicijnen met dosages gevonden.");
+                    }
+                } else {
+                    out.println("Geen gegevens aangepast.");
+                }
+                savePatientDataToFile(patientList, filePath);
+                displayPatientData(foundPatient);
             } else {
-                out.println("Access denied. Invalid user role or insufficient permissions.");
+                out.println(searchName + " is niet bekend in onze lijst");
             }
+            scanPatient.close();
         } else {
             out.println("The JSON array is empty.");
         }
-
-        out.println("Wat is de naam van uw patiënt?");
-        Scanner scanPatient = new Scanner(System.in);
-        String searchName = scanPatient.nextLine();
-        // Search for the patient by name
-        JSONObject foundPatient = findPatientByName(patientList, searchName);
-
-        if (foundPatient != null) {
-            displayPatientData(foundPatient);
-            out.println("Menu opties:");
-            out.println("1. Bewerk lengte");
-            out.println("2. Bewerk gewicht");
-            out.println("3. Voeg medicijnen toe");
-            out.println("4. Bewerk medicijn dosages");
-            out.println("5. Exit");
-            out.print("Voer uw keuze in: ");
-            int choice = scanPatient.nextInt();
-
-            if (choice == 1) {
-                // Edit Length
-                out.print("Nieuwe lengte (in cm): ");
-                int newLength = scanPatient.nextInt();
-                foundPatient.put("length", newLength);
-                out.println("Lengte is aangepast.");
-            } else if (choice == 2) {
-                // Edit Weight
-                out.print("Nieuw gewicht (in kg): ");
-                double newWeight = scanPatient.nextDouble();
-                foundPatient.put("weight", newWeight);
-                out.println("Gewicht is aangepast.");
-            } else if (choice == 3) {
-                // Add medicine
-                scanPatient.nextLine();
-                out.print("Voeg medicijnen toe (gescheiden door komma's): ");
-                String inputMedicine = scanPatient.nextLine();
-                out.print("Voeg medicijn dosages toe (gescheiden door komma's): ");
-                String inputDosages = scanPatient.nextLine();
-                List<String> newMedicine = Arrays.asList(inputMedicine.split(","));
-                List<String> newDosages = Arrays.asList(inputDosages.split(","));
-                JSONArray existingMedicineArray = (JSONArray) foundPatient.get("medicine");
-                JSONArray existingDosagesArray = (JSONArray) foundPatient.get("dosages");
-
-                if (existingMedicineArray == null) {
-                    existingMedicineArray = new JSONArray();
-                }
-                if (existingDosagesArray == null) {
-                    existingDosagesArray = new JSONArray();
-                }
-                existingMedicineArray.addAll(newMedicine);
-                existingDosagesArray.addAll(newDosages);
-                foundPatient.put("medicine", existingMedicineArray);
-                foundPatient.put("dosages", existingDosagesArray);
-                out.println("Medicijn(en) en dosages toegevoegd.");
-            } else if (choice == 4) {
-                // Edit Medicine Dosages
-                JSONArray existingMedicineArray = (JSONArray) foundPatient.get("medicine");
-                JSONArray existingDosagesArray = (JSONArray) foundPatient.get("dosages");
-
-                if (existingMedicineArray != null && existingDosagesArray != null) {
-                    out.println("Huidige medicijnen en dosages:");
-                    for (int i = 0; i < existingMedicineArray.size(); i++) {
-                        String medicine = (String) existingMedicineArray.get(i);
-                        String dosage = (String) existingDosagesArray.get(i);
-                        out.println((i + 1) + ". " + medicine + " - Dosage: " + dosage);
-                    }
-                    out.print("Voer het nummer in van het medicijn dat u wilt bewerken: ");
-                    int medChoice = scanPatient.nextInt();
-                    if (medChoice >= 1 && medChoice <= existingMedicineArray.size()) {
-                        out.print("Voer de nieuwe dosage in: ");
-                        String newDosage = scanPatient.next();
-                        existingDosagesArray.set(medChoice - 1, newDosage);
-                        foundPatient.put("dosages", existingDosagesArray);
-                        out.println("Dosage is aangepast.");
-                    } else {
-                        out.println("Ongeldige keuze.");
-                    }
-                } else {
-                    out.println("Geen medicijnen met dosages gevonden.");
-                }
-            } else {
-                out.println("Geen gegevens aangepast.");
-            }
-            savePatientDataToFile(patientList, filePath);
-            displayPatientData(foundPatient);
-        } else {
-            out.println(searchName + " is niet bekend in onze lijst");
-        }
-        scanPatient.close();
     }
 
 
@@ -141,6 +146,19 @@ public class Patient {
             err.println("Error saving data to the file.");
             e.printStackTrace();
         }
+    }
+
+    public static void registerLonginhoud(JSONObject patient) {
+        Scanner scanner = new Scanner(System.in);
+        out.print("Voer de longinhoud (in liters) in voor " + patient.get("name") + ": ");
+        double longinhoud = scanner.nextDouble();
+        patient.put("longinhoud", longinhoud);
+        out.println("Longinhoud is geregistreerd.");
+
+    }
+
+    public static void saveLonginhoud(JSONObject patient, double longinhoud) {
+        patient.put("longinhoud", longinhoud);
     }
 
     public static void displayPatientData(JSONObject patient) {
