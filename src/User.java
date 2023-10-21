@@ -4,6 +4,22 @@ import java.util.InputMismatchException;
 import static java.lang.System.*;
 
 public class User {
+
+    protected JSONArray patientList;
+
+    public User(JSONArray patientList) {
+        this.patientList = patientList;
+    }
+
+    public void savePatientDataToFile(String filePath) {
+        // Implementation for saving patient data
+    }
+
+    public void handlePatientList(String filePath) {
+        // Common method to handle patient data
+        // Implement access control based on user type
+    }
+
     public static String user(String[] args) {
         out.println("Menu opties:");
         out.println("1. Huisarts");
