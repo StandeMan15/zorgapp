@@ -30,16 +30,16 @@ public class Patient {
                 out.println("1. Bewerk lengte");
                 out.println("2. Bewerk gewicht");
 
-                if (userRole.equals("Zorgverlener")) {
+                if (userRole.equals("Huisarts")) {
                     //laat zien van bmi grafiek
                     //constulten bijhouden
-                } else if (userRole.equals("Fysiotherapeut")) {
-                    registerLonginhoud(foundPatient);
                 } else if (userRole.equals("Apotheker")) {
                     out.println("3. Voeg medicijnen toe");
                     out.println("4. Bewerk medicijn dosages");
-                } else if (userRole.equals("Gebruiker")) {
+                } else if (userRole.equals("Psygoloog")) {
                     // lijst patienten
+                } else if (userRole.equals("Fysiotherapeut")) {
+                    registerLonginhoud(foundPatient);
                 } else {
                     out.println("Access denied. Invalid user role or insufficient permissions.");
                 }
